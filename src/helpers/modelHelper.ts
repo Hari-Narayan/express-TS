@@ -1,0 +1,22 @@
+import moment from "moment";
+import { genSaltSync, hashSync } from "bcryptjs";
+
+import config from "../config";
+
+export const setJson: any = {
+  getters: true,
+  transform: (_doc: any, ret: any) => {
+    delete ret._id;
+    delete ret.password;
+
+    ret.createdAt = moment(ret.createdAt).format(config.dateFormat);
+    ret.updatedAt = moment(ret.updatedAt).format(config.dateFormat);
+  },
+};
+
+export function encryptPassword(password: string) {
+  const salt = genSaltSync(10);
+  const hash = hashSync(password, salt);
+
+  return hash;
+}
