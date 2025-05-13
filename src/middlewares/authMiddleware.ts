@@ -7,7 +7,11 @@ import { UNAUTHORIZED } from "../lang/en/auth";
 import { USER_NOT_FOUND } from "../lang/en/user";
 import ResponseHelper from "../helpers/responseHelper";
 
-const auth = async (req: Request, res: Response, next: NextFunction) => {
+const auth = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<any> => {
   let token = req.headers.authorization || "";
   token = token ? token.replace("Bearer ", "") : "";
 
@@ -24,8 +28,8 @@ const auth = async (req: Request, res: Response, next: NextFunction) => {
       });
     }
 
-    req.user = user; // Now 'user' is guaranteed to be non-null here
-    return next();
+    req.user = user;
+    next();
   } catch (error) {
     return ResponseHelper.error({
       res,
