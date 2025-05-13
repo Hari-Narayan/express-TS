@@ -1,14 +1,14 @@
 import bcrypt from "bcryptjs";
 import { Request, Response } from "express";
 
-import config from "../config";
+import configs from "../configs";
 import User from "../models/user";
-import mailer from "../helpers/mailer";
+import mailer from "../helpers/mailerHelper";
 import { USER_NOT_FOUND } from "../lang/en/user";
+import CommonHelper from "../helpers/commonHelper";
 import ResetPassword from "../models/resetPassword";
 import ResponseHelper from "../helpers/responseHelper";
 import { SOMETHING_WENT_WRONG } from "../lang/en/common";
-import { generateToken, randomString } from "../helpers/common";
 import {
   LOGIN_SUCCESS,
   RESET_LINK_SENT,
@@ -40,7 +40,7 @@ export const login = async (req: Request, res: Response): Promise<any> => {
         message: INCORRECT_PASSWORD,
       });
 
-    const token = generateToken(user.email);
+    const token = CommonHelper.generateToken(user.email);
 
     return ResponseHelper.success({
       res,
@@ -68,7 +68,7 @@ export const register = async (req: Request, res: Response): Promise<any> => {
 
     user = await new User(req.body).save();
 
-    const token = generateToken(user.email);
+    const token = CommonHelper.generateToken(user.email);
 
     return ResponseHelper.success({
       res,
@@ -106,14 +106,14 @@ export const forgotPassword = async (
 
     let resetUser = await new ResetPassword({
       email,
-      token: randomString(60),
+      token: CommonHelper.randomString(60),
       expiredAt: new Date().getTime() + 1000 * 60 * 60,
     }).save();
 
     await mailer({
       to: email,
       subject: "Reset Password",
-      html: `<a href="${config.resetLink.replace(
+      html: `<a href="${configs.resetLink.replace(
         "token",
         resetUser.token
       )}" target="_blank">Click here to reset password</a>`,

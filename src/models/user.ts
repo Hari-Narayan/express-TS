@@ -26,7 +26,7 @@ const userSchema: Schema = new Schema(
     toJSON: setJson,
     timestamps: true,
     versionKey: false,
-  },
+  }
 );
 
 const User = model<IUser>("User", userSchema);

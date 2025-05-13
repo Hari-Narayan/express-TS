@@ -1,10 +1,11 @@
 import { Response } from "express";
+import { SOMETHING_WENT_WRONG } from "../lang/en/common";
 
 export interface IResponse {
   data?: any;
   code?: number;
   res: Response;
-  message: string;
+  message?: string;
   error?: any | null;
 }
 
@@ -15,9 +16,9 @@ export default class ResponseHelper {
 
   static error({
     res,
-    message,
     code = 500,
     error = null,
+    message = SOMETHING_WENT_WRONG,
   }: IResponse): Response {
     return res.status(code).json({ success: true, message, error });
   }
