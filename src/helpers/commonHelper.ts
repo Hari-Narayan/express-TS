@@ -171,6 +171,11 @@ export default class CommonHelper {
     return token;
   };
 
+  /**
+   * ### Display Routes
+   * @param packageJson - Package json data
+   * @param rootRouter - Root route stack
+   */
   static displayRoutes = (packageJson: any, rootRouter: any): void => {
     const expressVersion = packageJson.dependencies.express.toString();
 
