@@ -1,6 +1,10 @@
 import { Schema, model } from "mongoose";
 
-import { encryptPassword, setJson } from "../helpers/modelHelper";
+import {
+  setJson,
+  createFileURL,
+  encryptPassword,
+} from "../helpers/modelHelper";
 
 export interface IUser {
   _id: String;
@@ -10,6 +14,7 @@ export interface IUser {
   password: String;
   createdAt?: Date;
   updatedAt?: Date;
+  profileImage: String;
 }
 
 const userSchema: Schema = new Schema(
@@ -20,6 +25,11 @@ const userSchema: Schema = new Schema(
       type: String,
       required: false,
       set: encryptPassword,
+    },
+    profileImage: {
+      type: String,
+      required: false,
+      get: (value: string) => createFileURL(value, "users"),
     },
   },
   {

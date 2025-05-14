@@ -3,7 +3,7 @@ import { Request, Response } from "express";
 
 import configs from "../configs";
 import User from "../models/user";
-import mailer from "../helpers/mailerHelper";
+import mailer from "../helpers/mailHelper";
 import { USER_NOT_FOUND } from "../lang/en/user";
 import CommonHelper from "../helpers/commonHelper";
 import ResetPassword from "../models/resetPassword";
@@ -18,27 +18,28 @@ import {
   RESET_LINK_EXPIRED,
   USER_ALREADY_EXIST,
 } from "../lang/en/auth";
+import MailHelper from "../helpers/mailHelper";
 
 export const login = async (req: Request, res: Response): Promise<any> => {
   try {
     const { email, password } = req.body;
     let user: any = await User.findOne({ email });
 
-    if (!user)
+    if (!user) {
       return ResponseHelper.error({
         res,
         code: 404,
-        error: USER_NOT_FOUND,
         message: USER_NOT_FOUND,
       });
+    }
 
-    if (!bcrypt.compareSync(password, user.password))
+    if (!bcrypt.compareSync(password, user.password)) {
       return ResponseHelper.error({
         res,
         code: 400,
-        error: INCORRECT_PASSWORD,
         message: INCORRECT_PASSWORD,
       });
+    }
 
     const token = CommonHelper.generateToken(user.email);
 
@@ -48,8 +49,6 @@ export const login = async (req: Request, res: Response): Promise<any> => {
       data: { ...user.toJSON(), token },
     });
   } catch (error) {
-    console.error(error);
-
     return ResponseHelper.error({ res, error, message: SOMETHING_WENT_WRONG });
   }
 };
@@ -58,16 +57,15 @@ export const register = async (req: Request, res: Response): Promise<any> => {
   try {
     let user: any = await User.findOne({ email: req.body.email });
 
-    if (user)
+    if (user) {
       return ResponseHelper.error({
         res,
         code: 400,
-        error: USER_ALREADY_EXIST,
         message: USER_ALREADY_EXIST,
       });
+    }
 
     user = await new User(req.body).save();
-
     const token = CommonHelper.generateToken(user.email);
 
     return ResponseHelper.success({
@@ -76,13 +74,7 @@ export const register = async (req: Request, res: Response): Promise<any> => {
       data: { ...user.toJSON(), token },
     });
   } catch (error) {
-    console.error(error);
-
-    return ResponseHelper.error({
-      res,
-      error,
-      message: SOMETHING_WENT_WRONG,
-    });
+    return ResponseHelper.error({ res, error });
   }
 };
 
@@ -94,13 +86,13 @@ export const forgotPassword = async (
     const { email } = req.body;
     const user = await User.findOne({ email });
 
-    if (!user)
+    if (!user) {
       return ResponseHelper.error({
         res,
         code: 404,
-        error: USER_NOT_FOUND,
         message: USER_NOT_FOUND,
       });
+    }
 
     await ResetPassword.findOneAndDelete({ email });
 
@@ -110,7 +102,7 @@ export const forgotPassword = async (
       expiredAt: new Date().getTime() + 1000 * 60 * 60,
     }).save();
 
-    await mailer({
+    await MailHelper.mailer({
       to: email,
       subject: "Reset Password",
       html: `<a href="${configs.resetLink.replace(
@@ -125,13 +117,7 @@ export const forgotPassword = async (
       message: RESET_LINK_SENT,
     });
   } catch (error) {
-    console.error(error);
-
-    return ResponseHelper.error({
-      res,
-      error,
-      message: SOMETHING_WENT_WRONG,
-    });
+    return ResponseHelper.error({ res, error });
   }
 };
 
@@ -140,25 +126,18 @@ export const resetPassword = async (
   res: Response
 ): Promise<any> => {
   try {
-    const { token, newPassword, confirmPassword } = req.body;
+    const { token, newPassword } = req.body;
     const resetPassword: any = await ResetPassword.findOne({ token });
     const { email, expiredAt } = resetPassword;
     const now = new Date().getTime();
 
-    if (now > expiredAt)
+    if (now > expiredAt) {
       return ResponseHelper.error({
         res,
         code: 400,
-        error: RESET_LINK_EXPIRED,
         message: RESET_LINK_EXPIRED,
       });
-
-    if (newPassword !== confirmPassword)
-      return ResponseHelper.error({
-        res,
-        code: 400,
-        message: "Password & Confirm password does not match!",
-      });
+    }
 
     await User.findOneAndUpdate(
       { email },
@@ -168,11 +147,8 @@ export const resetPassword = async (
 
     await ResetPassword.deleteOne({ token });
 
-    return ResponseHelper.success({
-      res,
-      message: PASSWORD_CHANGED,
-    });
+    return ResponseHelper.success({ res, message: PASSWORD_CHANGED });
   } catch (error) {
-    return ResponseHelper.error({ res, error, message: SOMETHING_WENT_WRONG });
+    return ResponseHelper.error({ res, error });
   }
 };

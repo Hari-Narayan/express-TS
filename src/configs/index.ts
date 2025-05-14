@@ -17,6 +17,7 @@ interface Config {
   apiBaseUrl: string;
   dateFormat: string;
   mailSender: string;
+  uploadPath: string;
   environment: string;
   mailPassword: string;
 }
@@ -38,6 +39,7 @@ const configs: Config = {
   mailPort: Number(process.env.MAIL_PORT) || 465,
   jwtSecret: process.env.JWT_SECRET || "jwt_secret",
   environment: process.env.NODE_ENV || "development",
+  uploadPath: process.env.UPLOAD_PATH || "/public/uploads/",
 };
 
 export default configs;

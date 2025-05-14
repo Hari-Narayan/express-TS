@@ -12,8 +12,10 @@ export default class ResponseHelper {
     res,
     code = 500,
     error = null,
-    message = SOMETHING_WENT_WRONG,
+    message = "",
   }: IResponse): Response {
-    return res.status(code).json({ success: true, message, error });
+    message = message || error?.message || SOMETHING_WENT_WRONG;
+
+    return res.status(code).json({ success: false, message, error });
   }
 }
