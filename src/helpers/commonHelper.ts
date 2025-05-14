@@ -177,23 +177,29 @@ export default class CommonHelper {
    * @param rootRouter - Root route stack
    */
   static displayRoutes = (packageJson: any, rootRouter: any): void => {
-    const expressVersion = packageJson.dependencies.express.toString();
+    try {
+      const expressVersion = packageJson.dependencies.express.toString();
 
-    if (expressVersion.includes("4")) {
-      // Generate JSON from rootRouter.stack
-      const result = CommonHelper.serializeRouterStack(
-        rootRouter.stack,
-        configs.apiBaseUrl
-      );
+      if (expressVersion.includes("4.")) {
+        // Generate JSON from rootRouter.stack
+        const result = CommonHelper.serializeRouterStack(
+          rootRouter.stack,
+          configs.apiBaseUrl
+        );
 
-      console.table(CommonHelper.extractRoutes(result.layers));
-    } else {
-      console.info(
-        `${color.red(
-          `You are using Express version ${expressVersion}. So, serializeRouterStack and extractRoutePaths will not support.`
-        )}`
-      );
-      console.info("NOTE: Please use Express version 4.x.x for this feature.");
+        console.table(CommonHelper.extractRoutes(result.layers));
+      } else {
+        console.info(
+          `${color.red(
+            `You are using Express version ${expressVersion}. So, serializeRouterStack and extractRoutePaths will not support.`
+          )}`
+        );
+        console.info(
+          "NOTE: Please use Express version 4.x.x for this feature."
+        );
+      }
+    } catch (error: any) {
+      console.error(color.red(`❌ Error: ${error}`));
     }
   };
 }
