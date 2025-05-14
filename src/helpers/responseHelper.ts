@@ -1,13 +1,7 @@
 import { Response } from "express";
-import { SOMETHING_WENT_WRONG } from "../lang/en/common";
 
-export interface IResponse {
-  data?: any;
-  code?: number;
-  res: Response;
-  message?: string;
-  error?: any | null;
-}
+import { IResponse } from "../commonInterfaces";
+import { SOMETHING_WENT_WRONG } from "../lang/en/common";
 
 export default class ResponseHelper {
   static success({ res, message, data = {}, code = 200 }: IResponse): Response {

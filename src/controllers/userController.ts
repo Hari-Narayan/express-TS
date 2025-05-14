@@ -1,13 +1,14 @@
+import { compare } from "bcryptjs";
 import { Request, Response } from "express";
 
 import User from "../models/user";
+import { IRequest } from "../commonInterfaces";
 import ResponseHelper from "../helpers/responseHelper";
 import { SOMETHING_WENT_WRONG } from "../lang/en/common";
 import { USER_FOUND, USER_NOT_FOUND } from "../lang/en/user";
-import { compare } from "bcryptjs";
 import { INCORRECT_PASSWORD, PASSWORD_CHANGED } from "../lang/en/auth";
 
-export async function myProfile(req: any, res: Response): Promise<any> {
+export async function myProfile(req: IRequest, res: Response): Promise<any> {
   try {
     return ResponseHelper.success({
       res,
@@ -39,7 +40,7 @@ export async function updatePassword(
       });
     }
 
-    const isPassMatched = compare(password, user.password);
+    const isPassMatched = await compare(password, user.password.toString());
 
     if (!isPassMatched) {
       return ResponseHelper.error({

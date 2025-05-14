@@ -22,7 +22,7 @@
   },
   "homepage": "https://github.com/Hari-Narayan/express-TS#readme",
   "devDependencies": {
-    "@types/express": "^5.0.1",
+    "@types/express": "^4.17.21",
     "@types/jsonwebtoken": "^9.0.9",
     "@types/node": "^22.15.3",
     "@types/nodemailer": "^6.4.17",

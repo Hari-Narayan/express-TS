@@ -3,11 +3,11 @@ import { Schema, model } from "mongoose";
 import { encryptPassword, setJson } from "../helpers/modelHelper";
 
 export interface IUser {
-  _id: string;
-  email: string;
-  token?: string;
-  fullName: string;
-  password: string;
+  _id: String;
+  email: String;
+  token?: String;
+  fullName: String;
+  password: String;
   createdAt?: Date;
   updatedAt?: Date;
 }

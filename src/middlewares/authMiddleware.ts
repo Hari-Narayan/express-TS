@@ -1,14 +1,15 @@
 import { verify } from "jsonwebtoken";
-import { Request, Response, NextFunction } from "express";
+import { Response, NextFunction } from "express";
 
 import configs from "../configs";
 import User from "../models/user";
 import { UNAUTHORIZED } from "../lang/en/auth";
+import { IRequest } from "../commonInterfaces";
 import { USER_NOT_FOUND } from "../lang/en/user";
 import ResponseHelper from "../helpers/responseHelper";
 
 const auth = async (
-  req: Request,
+  req: IRequest,
   res: Response,
   next: NextFunction
 ): Promise<any> => {
