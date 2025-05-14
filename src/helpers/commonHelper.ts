@@ -41,7 +41,7 @@ export default class CommonHelper {
    * @param {number} length - Length of the random string to generate.
    * @returns {string} - Random string of specified length.
    */
-  static randomString(length: number = 40) {
+  static randomString(length: number = 40): string {
     let result = "";
     const chars =
       "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
@@ -169,5 +169,26 @@ export default class CommonHelper {
     });
 
     return token;
+  };
+
+  static displayRoutes = (packageJson: any, rootRouter: any): void => {
+    const expressVersion = packageJson.dependencies.express.toString();
+
+    if (expressVersion.includes("4")) {
+      // Generate JSON from rootRouter.stack
+      const result = CommonHelper.serializeRouterStack(
+        rootRouter.stack,
+        configs.apiBaseUrl
+      );
+
+      console.table(CommonHelper.extractRoutes(result.layers));
+    } else {
+      console.info(
+        `${color.red(
+          `You are using Express version ${expressVersion}. So, serializeRouterStack and extractRoutePaths will not support.`
+        )}`
+      );
+      console.info("NOTE: Please use Express version 4.x.x for this feature.");
+    }
   };
 }

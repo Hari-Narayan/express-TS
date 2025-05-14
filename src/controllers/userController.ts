@@ -24,23 +24,13 @@ export async function myProfile(req: IRequest, res: Response): Promise<any> {
 }
 
 export async function updatePassword(
-  req: Request,
+  req: IRequest,
   res: Response
 ): Promise<any> {
   try {
-    const { email, password, newPassword } = req.body;
-    const user = await User.findOne({ email });
-
-    if (!user) {
-      return ResponseHelper.error({
-        res,
-        code: 404,
-        error: USER_NOT_FOUND,
-        message: USER_NOT_FOUND,
-      });
-    }
-
-    const isPassMatched = await compare(password, user.password.toString());
+    const { password, newPassword }: any = req.body;
+    const { _id, password: oldPassword }: any = req.user;
+    const isPassMatched = await compare(password, oldPassword.toString());
 
     if (!isPassMatched) {
       return ResponseHelper.error({
@@ -51,10 +41,9 @@ export async function updatePassword(
       });
     }
 
-    await User.findOneAndUpdate(
-      { _id: user.id },
-      { $set: { password: newPassword } },
-      { new: true }
+    await User.updateOne(
+      { _id: _id.toString() },
+      { $set: { password: newPassword } }
     );
 
     return ResponseHelper.success({
