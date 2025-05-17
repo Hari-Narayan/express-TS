@@ -1,7 +1,7 @@
 import { join } from "path";
-import { unlinkSync } from "fs";
 import { Request } from "express";
 import { v4 as uuidv4 } from "uuid";
+import { existsSync, unlinkSync } from "fs";
 
 import configs from "../configs";
 
@@ -27,8 +27,12 @@ export default class FileUploadHelper {
 
   static removeSingleFile(filePath: string) {
     try {
+      if (!filePath) return;
+
       const [, oldFile] = filePath.split(configs.baseUrl);
       const oldFilePath = join(process.cwd(), configs.uploadPath, oldFile);
+
+      if (!existsSync(oldFilePath)) return;
 
       unlinkSync(oldFilePath);
     } catch (error) {
